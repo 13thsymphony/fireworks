@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="HDRFireworks.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HDRFireworks"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="layoutPanel" Grid.Row="0" Background="HotPink" Loaded="LayoutPanel_Loaded">
+            <canvas:CanvasSwapChainPanel x:Name="swapChainPanel"></canvas:CanvasSwapChainPanel>
+        </Grid>
+
+        <TextBlock x:Name="console" Grid.Row="1" MaxLines="5"></TextBlock>
+    </Grid>
+</Page>

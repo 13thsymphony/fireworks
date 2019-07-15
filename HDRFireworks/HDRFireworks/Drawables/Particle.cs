@@ -6,12 +6,12 @@ using Windows.Foundation;
 
 namespace HDRFireworks
 {
-    class BasicDrawableParams
+    class ParticleParams
     {
         static float _baseLuminanceScale = 20.0f;
         static double _decayTimeScaleMs = 3000.0f;
 
-        public BasicDrawableParams(Random rng)
+        public ParticleParams(Random rng)
         {
             BaseHue = new Vector3((float)rng.NextDouble(), (float)rng.NextDouble(), (float)rng.NextDouble());
             BaseLuminance = (float)rng.NextDouble() * _baseLuminanceScale;
@@ -46,8 +46,9 @@ namespace HDRFireworks
     /// <summary>
     /// A minimal implementation of IDrawable, other implementations can use this base class for convenience.
     /// HDR aware (uses scRGB colors).
+    /// We exclusively call Update and Render on this class type.
     /// </summary>
-    class BasicDrawable : IDrawable
+    class Particle : IDrawable
     {
         static float _maxRenderRadiusDips = 1.0f;
 
@@ -64,31 +65,31 @@ namespace HDRFireworks
         protected double _currTimeMs;
         protected bool _canDispose;
 
-        protected BasicDrawableParams _basicDrawableParams;
+        protected ParticleParams _params;
 
         public void Initialize(double initTimeMs,
                                Vector2 initPosMeters,
                                Random rng,
                                float metersPerDip = 1.0f)
         {
-            BasicDrawableParams pm = new BasicDrawableParams(rng);
+            ParticleParams pm = new ParticleParams(rng);
 
-            InitializeInternal(initTimeMs, initPosMeters, rng, pm, metersPerDip);
+            InitializeParticle(initTimeMs, initPosMeters, rng, pm, metersPerDip);
         }
 
         public void Initialize(double initTimeMs,
                                Vector2 initPosMeters,
                                Random rng,
-                               BasicDrawableParams pm,
+                               ParticleParams pm,
                                float metersPerDip = 1.0f)
         {
-            InitializeInternal(initTimeMs, initPosMeters, rng, pm, metersPerDip);
+            InitializeParticle(initTimeMs, initPosMeters, rng, pm, metersPerDip);
         }
 
-        protected void InitializeInternal(double initTimeMs,
+        protected virtual void InitializeParticle(double initTimeMs,
                                           Vector2 initPosMeters,
                                           Random rng,
-                                          BasicDrawableParams pm,
+                                          ParticleParams pm,
                                           float metersPerDip)
         {
             _posMeters = initPosMeters;
@@ -98,12 +99,12 @@ namespace HDRFireworks
 
             _canDispose = false;
             _requestedRenderRadiusDips = 1.0f;
-            _basicDrawableParams = pm;
+            _params = pm;
 
             _isInitialized = true;
         }
 
-        public void Update(double timeMs)
+        public virtual void Update(double timeMs)
         {
             if (_isInitialized == false)
             {
@@ -119,23 +120,23 @@ namespace HDRFireworks
             _currTimeMs = timeMs;
             var delta = _currTimeMs - _lastTimeMs;
 
-            _basicDrawableParams.BaseLuminance *= (float)Math.Exp(-delta / _basicDrawableParams.DecayTimeMs);
+            _params.BaseLuminance *= (float)Math.Exp(-delta / _params.DecayTimeMs);
 
-            if (_basicDrawableParams.BaseLuminance <= _basicDrawableParams.CanDisposeLuminance ||
-                _currTimeMs - _initTimeMs > _basicDrawableParams.MaxLifetimeMs)
+            if (_params.BaseLuminance <= _params.CanDisposeLuminance ||
+                _currTimeMs - _initTimeMs > _params.MaxLifetimeMs)
             {
                 _canDispose = true;
             }
         }
 
-        public void Render(CanvasDrawingSession ds, Vector4 boundsDips)
+        public virtual void Render(CanvasDrawingSession ds, Vector4 boundsDips)
         {
             if (_isInitialized == false)
             {
                 throw new InvalidOperationException();
             }
 
-            Vector4 color = new Vector4(_basicDrawableParams.BaseHue * _basicDrawableParams.BaseLuminance, 1.0f);
+            Vector4 color = new Vector4(_params.BaseHue * _params.BaseLuminance, 1.0f);
             CanvasSolidColorBrush brush = CanvasSolidColorBrush.CreateHdr(ds, color);
 
             var posDips = new Vector2(_posMeters.X / _metersPerDip, _posMeters.Y / _metersPerDip);

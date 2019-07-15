@@ -49,7 +49,7 @@ namespace HDRFireworks
             _acInfo = _dispInfo.GetAdvancedColorInfo();
             _stopwatch = new Stopwatch();
             _rng = new Random();
-            _drawables = new List<BasicDrawable>();
+            _particles = new List<IDrawable>();
 
             _stopwatch.Start();
         }
@@ -101,7 +101,7 @@ namespace HDRFireworks
         {
             using (var ds = _swapChain.CreateDrawingSession(Windows.UI.Color.FromArgb(0, 0, 0, 0)))
             {
-                foreach (var item in _drawables)
+                foreach (var item in _particles)
                 {
                     item.Render(ds, new Vector4());
                 }
@@ -112,23 +112,37 @@ namespace HDRFireworks
 
         private void Update()
         {
-            if (_rng.NextDouble() <= 0.05)
+            foreach (var item in _particles)
             {
-                var item = new BasicDrawable();
+                item.Update(_stopwatch.ElapsedMilliseconds);
+            }
+
+            _particles.RemoveAll(x => x.CanDispose == true);
+        }
+
+        private void GenNewParticles()
+        {
+            var val = _rng.NextDouble();
+            if (val <= 0.05)
+            {
+                var item = new Particle();
                 var pos = new Vector2((float)_rng.NextDouble() * _panelWidth / _defaultMetersPerDip,
                                       (float)_rng.NextDouble() * _panelHeight / _defaultMetersPerDip);
 
                 item.Initialize(_stopwatch.ElapsedMilliseconds, pos, _rng, _defaultMetersPerDip);
 
-                _drawables.Add(item);
+                _particles.Add(item);
             }
-
-            foreach (var item in _drawables)
+            else if (val <= 0.1)
             {
-                item.Update(_stopwatch.ElapsedMilliseconds);
-            }
+                var item = new Projectile();
+                var pos = new Vector2((float)_rng.NextDouble() * _panelWidth / _defaultMetersPerDip,
+                                      (float)_rng.NextDouble() * _panelHeight / _defaultMetersPerDip);
 
-            _drawables.RemoveAll(x => x.CanDispose == true);
+                item.Initialize(_stopwatch.ElapsedMilliseconds, pos, _rng, _defaultMetersPerDip);
+
+                _particles.Add(item);
+            }
         }
 
         private void Run()
@@ -137,6 +151,7 @@ namespace HDRFireworks
             {
                 while (true)
                 {
+                    GenNewParticles();
                     Update();
                     Render();
                 }
@@ -151,6 +166,6 @@ namespace HDRFireworks
         AdvancedColorInfo _acInfo;
         Stopwatch _stopwatch;
         Random _rng;
-        List<BasicDrawable> _drawables;
+        List<IDrawable> _particles;
     }
 }

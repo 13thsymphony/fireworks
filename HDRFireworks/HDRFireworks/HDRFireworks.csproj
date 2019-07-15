@@ -118,11 +118,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BasicDrawable.cs" />
-    <Compile Include="IDrawable.cs" />
+    <Compile Include="Drawables\Particle.cs" />
+    <Compile Include="Drawables\IDrawable.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Drawables\Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

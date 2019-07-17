@@ -23,6 +23,6 @@
             <canvas:CanvasSwapChainPanel x:Name="swapChainPanel"></canvas:CanvasSwapChainPanel>
         </Grid>
 
-        <TextBlock x:Name="console" Grid.Row="1" MaxLines="5"></TextBlock>
+        <TextBlock x:Name="console" Grid.Row="1" LineHeight="1"></TextBlock>
     </Grid>
 </Page>

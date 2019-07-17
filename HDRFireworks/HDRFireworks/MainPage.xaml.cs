@@ -27,14 +27,19 @@ namespace HDRFireworks
             this.InitializeComponent();
         }
 
-        private void DebugWrite(string text)
-        {
-            console.Text += "\n" + text;
-        }
+//        private void DebugWrite(string text)
+//        {
+//#pragma warning disable CS4014
+//            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+//            {
+//                Debug.WriteLine(text);
+//            });
+//#pragma warning restore
+//        }
 
         private void LayoutPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            DebugWrite(layoutPanel.ActualWidth + " " + layoutPanel.ActualHeight);
+            Debug.WriteLine(layoutPanel.ActualWidth + " " + layoutPanel.ActualHeight);
 
             CreateDeviceIndependentResources();
             CreateDeviceDependentResources();
@@ -118,12 +123,14 @@ namespace HDRFireworks
             }
 
             _particles.RemoveAll(x => x.CanDispose == true);
+
+            //Debug.WriteLine(_particles.Count.ToString());
         }
 
         private void GenNewParticles()
         {
             var val = _rng.NextDouble();
-            if (val <= 0.05)
+            if (val <= 0.1)
             {
                 var item = new Particle();
                 var pos = new Vector2((float)_rng.NextDouble() * _panelWidth / _defaultMetersPerDip,
@@ -131,15 +138,7 @@ namespace HDRFireworks
 
                 item.Initialize(_stopwatch.ElapsedMilliseconds, pos, _rng, _defaultMetersPerDip);
 
-                _particles.Add(item);
-            }
-            else if (val <= 0.1)
-            {
-                var item = new Projectile();
-                var pos = new Vector2((float)_rng.NextDouble() * _panelWidth / _defaultMetersPerDip,
-                                      (float)_rng.NextDouble() * _panelHeight / _defaultMetersPerDip);
-
-                item.Initialize(_stopwatch.ElapsedMilliseconds, pos, _rng, _defaultMetersPerDip);
+                //Debug.WriteLine("New: ");
 
                 _particles.Add(item);
             }

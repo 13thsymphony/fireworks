@@ -29,7 +29,7 @@ namespace HDRFireworks
         System.Numerics.Vector2 PosMeters { get; set; }
         System.Numerics.Vector2 PosDips { get; }
         float MetersPerDip { get; set; }
-        double CurrTimeMs { get; set; }
+        double CurrTimeSec { get; set; }
         /// <summary>
         /// Can the caller delete this object as the rendered output is complete at this point in time.
         /// </summary>
